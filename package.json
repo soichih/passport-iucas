@@ -1,6 +1,6 @@
 {
   "name": "passport-iucas",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Indiana University Cas authentication strategies for Passport.",
   "main": "index.js",
   "scripts": {},
