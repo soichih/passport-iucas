@@ -1,27 +1,32 @@
 {
-  "name": "passport-cas",
-  "version": "0.0.3",
-  "description": "Cas authentication strategies for Passport.",
+  "name": "passport-iucas",
+  "version": "0.0.0",
+  "description": "Indiana University Cas authentication strategies for Passport.",
   "main": "index.js",
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git@github.com:sadne/passport-cas.git"
+    "url": "git@github.com:soichih/passport-iucas.git"
   },
   "keywords": [
     "passport",
     "auth",
     "cas"
   ],
-  "author": "不会飞的羊",
+  "author": "Soichi Hayashi <hayashis@iu.edu>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sadne/passport-cas/issues"
+    "url": "https://github.com/soichih/passport-iucas/issues"
   },
-  "homepage": "https://github.com/sadne/passport-cas",
+  "homepage": "https://github.com/soichih/passport-iucas",
   "dependencies": {
-    "passport": "~0.1.18",
-    "xml2js" : "0.4.4"
-
+    "passport": "~0.1.18"
+  },
+  "devDependencies": {
+    "express": "~4.12.3",
+    "express-session": "~1.11.1",
+    "http": "0.0.0",
+    "morgan": "~1.5.2",
+    "express-jade": "0.0.3"
   }
 }

@@ -1,122 +1,30 @@
-# passport-cas
+# passport-iucas
 
-Cas authentication strategies for Passport.
-
+Indiana University CAS authentication strategies for Passport.
 
 ## Install
 
-    $ npm install passport-cas
+    $ npm install passport-iucas
 
 #### Configure Strategy
 
-    passport.use(new (require('passport-cas').Strategy)({
-      ssoBaseURL: 'http://www.example.com/',
-      serverBaseURL: 'http://localhost:3000'
-    }, function(login, done) {
-      User.findOne({login: login}, function (err, user) {
-        if (err) {
-          return done(err);
-        }
-        if (!user) {
-          return done(null, false, {message: 'Unknown user'});
-        }
-        return done(null, user);
-      });
-    }));
+    var iucas_strategy = new iucas.Strategy(function(username, done) {
+        //TODO - lookup user from specified username
+        return done(null, {id: username, email: 'user@email.com'});
+    });
+    passport.use(iucas_strategy);
 
 #### Authenticate Requests
 
-    passport.authenticate('cas', function (err, user, info) {
-      if (err) {
-        return next(err);
-      }
+    //access this to login via IU CAS
+    app.use('/protected', passport.authenticate('iucas', { failureRedirect: '/iucas/fail' }), function(req, res, next) {
+        //user object can be accessed via req.user
+        //render your protected content
+    });
 
-      if (!user) {
-        req.session.messages = info.message;
-        return res.redirect('/');
-      }
+#### req.user
 
-      req.logIn(user, function (err) {
-        if (err) {
-          return next(err);
-        }
-
-        req.session.messages = '';
-        return res.redirect('/');
-      });
-    })
-
-For example:
-
-    // GET: '/cas_login'
-    exports.casLogin = function(req, res, next) {
-      passport.authenticate('cas', function (err, user, info) {
-        if (err) {
-          return next(err);
-        }
-
-        if (!user) {
-          req.session.messages = info.message;
-          return res.redirect('/');
-        }
-
-        req.logIn(user, function (err) {
-          if (err) {
-            return next(err);
-          }
-
-          req.session.messages = '';
-          return res.redirect('/');
-        });
-      })(req, res, next);
-    };
-
-### CAS versions
-
-## CAS 3.0 configuration
-Since CAS3.0, the validation service returns a list of attributes for the authenticated user.
-Here is how you can use them:
-
-    passport.use(new (require('passport-cas').Strategy)({
-      version: 'CAS3.0',
-      ssoBaseURL: 'http://www.example.com/',
-      serverBaseURL: 'http://localhost:3000'
-    }, function(profile, done) {
-      var login = profile.user;
-
-      User.findOne({login: login}, function (err, user) {
-        if (err) {
-          return done(err);
-        }
-        if (!user) {
-          return done(null, false, {message: 'Unknown user'});
-        }
-        user.attributes = profile.attributes;
-        return done(null, user);
-      });
-    }));
-
-## CAS 2.0 configuration
-CAS 2.0 will work with the CAS 3.0 configuration, but you need to set the validation endpoint.
-
-    passport.use(new (require('passport-cas').Strategy)({
-      version: 'CAS3.0',
-      ssoBaseURL: 'http://www.example.com/',
-      serverBaseURL: 'http://localhost:3000/cas',
-      validateURL: '/serviceValidate'
-    }, function(profile, done) {
-      var login = profile.user;
-    
-      User.findOne({login: login}, function (err, user) {
-        if (err) {
-          return done(err);
-        }
-        if (!user) {
-          return done(null, false, {message: 'Unknown user'});
-        }
-        return done(null, user);
-      });
-    }));
+In order to access the req.user from other pages, you will need to persist it using express-session. Please see /test/app.js for example.
 
 ## License
 
