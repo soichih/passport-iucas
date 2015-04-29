@@ -22,9 +22,21 @@ Indiana University CAS authentication strategies for Passport.
         //render your protected content
     });
 
-#### req.user
+Instead of authenticating everytime you access /protected, you can do something like
 
-In order to access the req.user from other pages, you will need to persist it using express-session. Please see /test/app.js for example.
+    function ensureAuth(req, res, next) {
+        if(req.isAuthenticated()) {
+            return next();
+        } else {
+            res.redirect('/login');
+        }
+    }
+    app.use('/protected', ensureAuth, function(req, res) {
+        res.json({user: req.user});
+    });
+
+And make /login to the actual authentication. This requires you to use session so that your user object will be persisted. Please see 
+/test/app.js for more details.
 
 ## License
 
