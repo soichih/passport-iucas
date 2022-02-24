@@ -10,8 +10,7 @@ function Strategy(options, verify) {
     }
     if (!verify) { throw new Error('IU cas authentication strategy requires a verify function'); }
 
-    this.casURL = "https://cas.iu.edu/cas";
-    this.service = options.service || 'IU';
+    this.casURL = "https://idp.login.iu.edu/idp/profile/cas";
     this.serviceURL = options.serviceURL; //optional - if not set, authenticate will use current URL
 
     passport.Strategy.call(this);
@@ -48,21 +47,19 @@ Strategy.prototype.authenticate = function (req, options) {
     }
 
     //redirect to cas for the first time
-    if (!req.query.casticket) {
+    if (!req.query.ticket) {
         var redirectURL = url.parse(this.casURL+'/login');
         redirectURL.query = {
-            cassvc: this.service, 
-            casurl: serviceURL
+            service: serviceURL
         };
         return this.redirect(url.format(redirectURL));
     }
 
     //got ticket! validate it.
-    var validateURL = url.parse(this.casURL+'/validate');
+    var validateURL = url.parse(this.casURL+'/serviceValidate');
     validateURL.query = {
-        cassvc: this.service, 
-        casticket: req.query.casticket,
-        casurl: serviceURL
+        ticket: req.query.ticket,
+        service: serviceURL
     }
     https.get(url.format(validateURL), function(res) {
         var body = '';
@@ -70,11 +67,11 @@ Strategy.prototype.authenticate = function (req, options) {
             body += d;
         });
         res.on('end', function() {
-            var lines = body.split('\n');
-            if(lines[0].indexOf('yes') !== 0) {
+            if(body.indexOf('cas:authenticationSuccess') === -1) {
                 verified(new Error('Authentication failed'));
             } else {
-                var username = lines[1].trim();
+                var lines = body.split('\n');
+                var username = lines[3].replace('<cas:user>','').replace('</cas:user>', '').trim();
                 if(self._passReqToCallback) { 
                     self._verify(req, username, verified);
                 } else {
